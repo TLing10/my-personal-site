@@ -755,25 +755,6 @@ async function submitMessage() {
     btn.disabled = false;
 }
 
-function initContactForm() {
-    const form = document.getElementById('contactForm');
-    if (!form) return;
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const to = (typeof SITE_CONTENT !== 'undefined' && SITE_CONTENT.email) || '';
-        if (!to || to.indexOf('@') < 0) { showToast('站长还没填邮箱，暂时没法发邮件哦 ✦'); return; }
-        const name = form.querySelector('#cName').value.trim();
-        const fromEmail = form.querySelector('#cEmail').value.trim();
-        const msg = form.querySelector('#cMessage').value.trim();
-        if (!msg) { showToast('写点什么再发吧 ✦'); return; }
-        const subject = encodeURIComponent('来自 ' + (name || '访客') + ' 的留言');
-        const body = encodeURIComponent('访客：' + (name || '（未留名）') + '\n邮箱：' + (fromEmail || '（未留邮箱）') + '\n\n' + msg);
-        window.location.href = 'mailto:' + to + '?subject=' + subject + '&body=' + body;
-        showToast('已为你打开邮件 App，发送即可 ✦');
-        form.reset();
-    });
-}
-
 function initMessageWall() {
     const board = document.getElementById('starboard');
     document.getElementById('openStarboard').addEventListener('click', () => {
@@ -796,4 +777,3 @@ function initMessageWall() {
 }
 
 if (document.getElementById('openStarboard')) initMessageWall();
-initContactForm();

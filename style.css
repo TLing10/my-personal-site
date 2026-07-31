@@ -807,9 +807,8 @@ body {
 
 /* ===== 联系我 ===== */
 .contact-content {
-    display: grid;
-    grid-template-columns: 1fr 1.2fr;
-    gap: 3rem;
+    display: flex;
+    justify-content: center;
     align-items: start;
 }
 
@@ -821,6 +820,9 @@ body {
     box-shadow: 0 8px 30px var(--shadow);
     position: sticky;
     top: 100px;
+    max-width: 540px;
+    width: 100%;
+    margin: 0 auto;
 }
 
 .contact-avatar {
@@ -912,13 +914,6 @@ body {
 .sl-xhs:hover { background: #FF2442; }
 .sl-ig:hover { background: linear-gradient(45deg, #FEDA75, #FA7E1E, #D62976, #962FBF); }
 .sl-gh:hover { background: #24292e; }
-
-.contact-form {
-    background: var(--white);
-    border-radius: var(--radius);
-    padding: 2.5rem;
-    box-shadow: 0 8px 30px var(--shadow);
-}
 
 .form-group {
     margin-bottom: 1.5rem;
@@ -1273,8 +1268,7 @@ body {
 .about-card,
 .work-card,
 .timeline-card,
-.contact-card,
-.contact-form {
+.contact-card {
     border: 1px solid rgba(255, 255, 255, 0.7);
 }
 
@@ -1326,10 +1320,6 @@ body {
 .email-chip i { color: #EA4335; }
 .contact-chip:hover { transform: translateY(-2px); box-shadow: 0 6px 18px var(--shadow-hover); }
 .chip-wechat:empty::before, .chip-phone:empty::before, .chip-email:empty::before { content: '（待填写）'; color: #c2b3aa; font-weight: 400; }
-
-/* 联系表单标题 */
-.form-title { font-family: var(--font-cute); color: var(--brown); font-size: 1.35rem; margin-bottom: .4rem; }
-.form-sub { color: #9a8a80; font-size: .9rem; margin-bottom: 1.4rem; }
 
 /* 留言上传：从相册选文件 + 预览 */
 .file-input { width: 100%; font-size: .9rem; color: var(--brown); padding: 10px; border: 2px dashed var(--cream-dark); border-radius: var(--radius-sm); background: var(--cream); cursor: pointer; }
