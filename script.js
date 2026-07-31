@@ -471,6 +471,7 @@ window.addEventListener('load', () => {
 const MSG_REPO = 'TLing10/my-personal-site';
 const MSG_PATH = 'data/messages.json';
 let MSG_PAT = '__FINE_GRAINED_TOKEN__';   // ← 把这里替换成你的「仅本仓库」细粒度令牌
+let messagesCache = [];   // 内存缓存，提交后立即可见、不依赖 Pages 重建
 function getMsgPat() {
     return (window.__msgPatOverride && window.__msgPatOverride !== true) ? window.__msgPatOverride : MSG_PAT;
 }
@@ -531,10 +532,11 @@ function embedVideo(url) {
 async function loadMessages() {
     try {
         const r = await fetch(MSG_PATH + '?t=' + Date.now());
-        if (!r.ok) return [];
+        if (!r.ok) return messagesCache;
         const data = await r.json();
-        return Array.isArray(data) ? data : [];
-    } catch (e) { return []; }
+        messagesCache = Array.isArray(data) ? data : [];
+        return messagesCache;
+    } catch (e) { return messagesCache; }
 }
 
 function renderStars(messages) {
@@ -621,8 +623,9 @@ async function submitMessage() {
         showToast('这颗星星已挂上星盘 ✦');
         document.getElementById('writeModal').classList.remove('show');
         ['msgName', 'msgText', 'msgImage', 'msgVideo'].forEach(id => document.getElementById(id).value = '');
-        const fresh = await loadMessages();
-        renderStars(fresh);
+        // 立即用本地最新数据重绘，无需等待 Pages 重建即可看到自己刚发的星星
+        messagesCache = arr;
+        renderStars(messagesCache);
     } catch (err) {
         let msg = err.message || String(err);
         if (/Failed to fetch|NetworkError|api\.github/i.test(msg)) msg += '（多为网络无法访问 api.github.com，请确认网络/代理）';
