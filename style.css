@@ -1158,3 +1158,135 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+/* ===== 梦幻极光背景 ===== */
+.aurora {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse 60% 50% at 18% 8%, rgba(255, 214, 232, 0.40), transparent 60%),
+        radial-gradient(ellipse 50% 50% at 82% 18%, rgba(212, 241, 249, 0.40), transparent 60%),
+        radial-gradient(ellipse 60% 60% at 50% 85%, rgba(255, 242, 184, 0.35), transparent 60%),
+        radial-gradient(ellipse 45% 45% at 92% 90%, rgba(212, 245, 224, 0.35), transparent 60%);
+    filter: blur(24px);
+    animation: auroraShift 18s ease-in-out infinite alternate;
+}
+
+@keyframes auroraShift {
+    0%   { transform: translate(0, 0) scale(1);    opacity: 0.8; }
+    50%  { transform: translate(-3%, 2%) scale(1.05); opacity: 1; }
+    100% { transform: translate(3%, -2%) scale(1.1);  opacity: 0.85; }
+}
+
+/* ===== 区块星星分隔带 ===== */
+.section-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin: 0 auto 2.5rem;
+    max-width: 320px;
+}
+
+.section-divider::before,
+.section-divider::after {
+    content: '';
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--pink), transparent);
+    border-radius: 2px;
+}
+
+.section-divider span {
+    font-size: 1.4rem;
+    color: var(--brown-light);
+    text-shadow: 0 0 12px rgba(255, 242, 184, 0.9);
+    animation: twinkle 2.2s ease-in-out infinite;
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.55; transform: scale(1); }
+    50%      { opacity: 1;    transform: scale(1.18); }
+}
+
+/* ===== 邮箱胶囊 ===== */
+.email-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 1.2rem 0;
+    padding: 0.8rem 1.6rem;
+    background: linear-gradient(135deg, var(--pink) 0%, var(--yellow) 100%);
+    color: var(--chocolate);
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    box-shadow: 0 6px 20px rgba(255, 214, 232, 0.5);
+    transition: all 0.3s ease;
+    word-break: break-all;
+}
+
+.email-pill:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 10px 30px rgba(255, 214, 232, 0.7);
+}
+
+/* ===== 技能气泡说明小字 ===== */
+.skill-note {
+    font-size: 0.76rem;
+    color: var(--text-light);
+    font-weight: 600;
+    margin-top: -0.15rem;
+    letter-spacing: 0.5px;
+}
+
+.skill-stars { margin-top: 0.35rem; }
+
+/* ===== 玻璃质感增强 ===== */
+.about-card,
+.work-card,
+.timeline-card,
+.contact-card,
+.contact-form {
+    border: 1px solid rgba(255, 255, 255, 0.7);
+}
+
+.about-card.main-card,
+.contact-card {
+    box-shadow: 0 10px 40px var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+/* ===== 标题渐变描边 ===== */
+.section-title {
+    background: linear-gradient(120deg, var(--brown) 0%, var(--brown-light) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 2px 20px rgba(255, 214, 232, 0.4);
+}
+
+/* ===== Hero 柔光层 ===== */
+.hero {
+    position: relative;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    width: 650px;
+    height: 650px;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, rgba(255, 242, 184, 0.28) 0%, transparent 60%);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.hero-content { position: relative; z-index: 2; }
