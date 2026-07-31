@@ -544,12 +544,12 @@ function renderStars(messages) {
     messages.forEach((m, i) => {
         const r = rng(hashStr(m.id || ('' + i)));
         const el = document.createElement('div');
-        el.className = 'star';
+        el.className = 'msg-star';
         el.style.left = (8 + r() * 80) + '%';
         el.style.top = (6 + r() * 84) + '%';
         el.style.fontSize = (1.2 + r() * 1.1) + 'rem';
         el.style.animationDelay = (r() * 3) + 's';
-        el.innerHTML = '⭐<span class="star-label">' + escapeHtml(m.name || '匿名') + '</span>';
+        el.innerHTML = '⭐<span class="msg-star-label">' + escapeHtml(m.name || '匿名') + '</span>';
         el.addEventListener('click', () => openMsgModal(m));
         field.appendChild(el);
     });
