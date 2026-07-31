@@ -470,7 +470,7 @@ window.addEventListener('load', () => {
    ========================================================= */
 const MSG_REPO = 'TLing10/my-personal-site';
 const MSG_PATH = 'data/messages.json';
-let MSG_PAT = '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';   // 「仅本仓库 / Contents 读写」细粒度令牌（公开在前端，权限仅限于本仓库）
+let MSG_PAT = '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';   // 「仅本仓库 / Contents 读写」细粒度令牌（公开在前端，权限仅限于本仓库）
 let messagesCache = [];   // 内存缓存，提交后立即可见、不依赖 Pages 重建
 function getMsgPat() {
     return (window.__msgPatOverride && window.__msgPatOverride !== true) ? window.__msgPatOverride : MSG_PAT;
@@ -747,7 +747,7 @@ function initContactForm() {
     if (!form) return;
     form.addEventListener('submit', (e) => {
         e.preventDefault();
-        const to = (window.SITE_CONTENT && SITE_CONTENT.email) || '';
+        const to = (typeof SITE_CONTENT !== 'undefined' && SITE_CONTENT.email) || '';
         if (!to || to.indexOf('@') < 0) { showToast('站长还没填邮箱，暂时没法发邮件哦 ✦'); return; }
         const name = form.querySelector('#cName').value.trim();
         const fromEmail = form.querySelector('#cEmail').value.trim();
