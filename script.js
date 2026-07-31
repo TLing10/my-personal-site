@@ -470,8 +470,19 @@ window.addEventListener('load', () => {
    ========================================================= */
 const MSG_REPO = 'TLing10/my-personal-site';
 const MSG_PATH = 'data/messages.json';
-let MSG_PAT = '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';   // 「仅本仓库 / Contents 读写」细粒度令牌（公开在前端，权限仅限于本仓库）
+// 留言写入代理（Cloudflare Worker）。部署后把地址填到这里，例如 'https://msg-proxy.xxx.workers.dev'
+// 令牌只存在 Worker 的 Secret(GITHUB_TOKEN)里，前端不再接触令牌，也不会被 GitHub 扫描吊销。
+// 留空则回退到下面的 MSG_PAT —— 但公开仓库里的令牌会被 GitHub 自动吊销，强烈建议用 Worker。
+const WORKER_URL = '';
+let MSG_PAT = '';   // 未使用 Worker 时的兜底令牌；留空即“留言功能待配置”
 let messagesCache = [];   // 内存缓存，提交后立即可见、不依赖 Pages 重建
+
+// 拼接 GitHub API 路径：有 Worker 走代理，否则直连 api.github.com
+function ghApi(suffix) {
+    return WORKER_URL
+        ? (WORKER_URL.replace(/\/+$/, '') + '/repos/' + MSG_REPO + '/' + suffix)
+        : ('https://api.github.com/repos/' + MSG_REPO + '/' + suffix);
+}
 function getMsgPat() {
     return (window.__msgPatOverride && window.__msgPatOverride !== true) ? window.__msgPatOverride : MSG_PAT;
 }
@@ -624,10 +635,13 @@ function compressImage(file, maxDim = 1280, quality = 0.82) {
     });
 }
 function ghHeaders(pat, extra) {
-    return Object.assign({ Authorization: 'Bearer ' + pat, Accept: 'application/vnd.github+json' }, extra || {});
+    const h = Object.assign({ Accept: 'application/vnd.github+json' }, extra || {});
+    // Worker 模式下令牌由 Worker 代加，前端不携带 Authorization，避免令牌暴露/被扫描
+    if (!WORKER_URL && pat) h.Authorization = 'Bearer ' + pat;
+    return h;
 }
 async function putContents(path, b64, pat, message) {
-    const url = `https://api.github.com/repos/${MSG_REPO}/contents/${path}`;
+    const url = ghApi('contents/' + path);
     const res = await fetch(url, {
         method: 'PUT',
         headers: ghHeaders(pat, { 'Content-Type': 'application/json' }),
@@ -637,16 +651,15 @@ async function putContents(path, b64, pat, message) {
     return `https://tling10.github.io/my-personal-site/${path}`;
 }
 async function commitBlob(path, b64, pat, message) {
-    const base = `https://api.github.com/repos/${MSG_REPO}`;
     const h = ghHeaders(pat, { 'Content-Type': 'application/json' });
-    const blob = await fetch(base + '/git/blobs', { method: 'POST', headers: h, body: JSON.stringify({ content: b64, encoding: 'base64' }) }).then(r => r.json());
+    const blob = await fetch(ghApi('git/blobs'), { method: 'POST', headers: h, body: JSON.stringify({ content: b64, encoding: 'base64' }) }).then(r => r.json());
     if (!blob.sha) throw new Error('视频上传失败：blob 创建失败');
-    const ref = await fetch(base + '/git/refs/heads/main', { headers: h }).then(r => r.json());
+    const ref = await fetch(ghApi('git/refs/heads/main'), { headers: h }).then(r => r.json());
     const baseSha = ref.object.sha;
-    const baseCommit = await fetch(base + '/git/commits/' + baseSha, { headers: h }).then(r => r.json());
-    const tree = await fetch(base + '/git/trees', { method: 'POST', headers: h, body: JSON.stringify({ base_tree: baseCommit.tree.sha, tree: [{ path, mode: '100644', type: 'blob', sha: blob.sha }] }) }).then(r => r.json());
-    const commit = await fetch(base + '/git/commits', { method: 'POST', headers: h, body: JSON.stringify({ message, tree: tree.sha, parents: [baseSha] }) }).then(r => r.json());
-    const up = await fetch(base + '/git/refs/heads/main', { method: 'PATCH', headers: h, body: JSON.stringify({ sha: commit.sha }) });
+    const baseCommit = await fetch(ghApi('git/commits/' + baseSha), { headers: h }).then(r => r.json());
+    const tree = await fetch(ghApi('git/trees'), { method: 'POST', headers: h, body: JSON.stringify({ base_tree: baseCommit.tree.sha, tree: [{ path, mode: '100644', type: 'blob', sha: blob.sha }] }) }).then(r => r.json());
+    const commit = await fetch(ghApi('git/commits'), { method: 'POST', headers: h, body: JSON.stringify({ message, tree: tree.sha, parents: [baseSha] }) }).then(r => r.json());
+    const up = await fetch(ghApi('git/refs/heads/main'), { method: 'PATCH', headers: h, body: JSON.stringify({ sha: commit.sha }) });
     if (!up.ok) throw new Error('视频上传失败：提交未生效');
     return `https://tling10.github.io/my-personal-site/${path}`;
 }
@@ -684,7 +697,7 @@ async function submitMessage() {
     const vidFile = document.getElementById('msgVideoFile').files[0];
     if (!text && !imgFile && !vidFile) { showToast('写点什么，或传张图/视频再发送吧 ✦'); return; }
     const pat = getMsgPat();
-    if (pat.indexOf('__') === 0) { showToast('留言功能待配置：管理员在 script.js 填入细粒度令牌后即可 ✦'); return; }
+    if (!WORKER_URL && !pat) { showToast('留言功能待配置：管理员在 script.js 填入 Worker 地址或细粒度令牌后即可 ✦'); return; }
 
     const btn = document.getElementById('submitMsg');
     btn.disabled = true;
@@ -704,7 +717,7 @@ async function submitMessage() {
             video = await uploadMedia('data/uploads/m' + Date.now() + '.' + ext, b64, pat, true);
         }
 
-        const url = `https://api.github.com/repos/${MSG_REPO}/contents/${MSG_PATH}`;
+        const url = ghApi('contents/' + MSG_PATH);
         const headers = ghHeaders(pat);
         const meta = await fetch(url, { headers }).then(r => r.json());
         let arr = [];
