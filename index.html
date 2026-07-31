@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>欢迎来到我的小世界 ✦</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- 动态星空背景画布 -->
+    <canvas id="starfield"></canvas>
+    
+    <!-- 漂浮装饰层 -->
+    <div class="floating-decorations" aria-hidden="true">
+        <span class="float-item otter">🦦</span>
+        <span class="float-item star">✦</span>
+        <span class="float-item star">✧</span>
+        <span class="float-item otter">🦦</span>
+        <span class="float-item star">✨</span>
+        <span class="float-item heart">🎀</span>
+        <span class="float-item star">⭐</span>
+        <span class="float-item otter">🦦</span>
+    </div>
+
+    <!-- 导航栏 -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-brand">
+            <img src="images/logo.jpg" alt="我的logo" class="nav-logo">
+            <span class="nav-name">你的名字</span>
+        </div>
+        <button class="nav-toggle" id="navToggle" aria-label="切换菜单">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <ul class="nav-menu" id="navMenu">
+            <li><a href="#home" class="nav-link">首页</a></li>
+            <li><a href="#about" class="nav-link">关于我</a></li>
+            <li><a href="#skills" class="nav-link">技能</a></li>
+            <li><a href="#works" class="nav-link">作品</a></li>
+            <li><a href="#timeline" class="nav-link">历程</a></li>
+            <li><a href="#contact" class="nav-link">联系</a></li>
+        </ul>
+    </nav>
+
+    <!-- 首页 Hero -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <div class="hero-logo-wrapper">
+                <div class="logo-glow"></div>
+                <img src="images/logo.jpg" alt="核心logo" class="hero-logo">
+                <div class="orbit-stars">
+                    <span class="orbit-star">✦</span>
+                    <span class="orbit-star">✧</span>
+                    <span class="orbit-star">✦</span>
+                    <span class="orbit-star">✨</span>
+                </div>
+            </div>
+            <h1 class="hero-title">
+                <span class="title-line">嗨，我是</span>
+                <span class="title-name" id="typewriter">你的名字</span>
+                <span class="cursor">|</span>
+            </h1>
+            <p class="hero-subtitle">这里将会写上你的个人介绍语 ✦</p>
+            <div class="hero-tags">
+                <span class="tag">梦想家</span>
+                <span class="tag">创作者</span>
+                <span class="tag">海獭爱好者</span>
+                <span class="tag">追星者</span>
+            </div>
+            <a href="#about" class="hero-btn">
+                <span>认识我</span>
+                <span class="btn-stars">✦</span>
+            </a>
+        </div>
+        <div class="scroll-hint">
+            <span>向下滑动</span>
+            <div class="scroll-arrow"></div>
+        </div>
+    </section>
+
+    <!-- 关于我 -->
+    <section id="about" class="section about">
+        <div class="section-header">
+            <span class="section-icon">🦦</span>
+            <h2 class="section-title">关于我</h2>
+            <p class="section-desc">这里先空着，等待你填入真实的自我介绍</p>
+        </div>
+        <div class="about-content">
+            <div class="about-card main-card">
+                <div class="card-decoration">
+                    <span class="deco-star">✦</span>
+                    <span class="deco-heart">🎀</span>
+                </div>
+                <h3>我是谁</h3>
+                <p class="placeholder-text">（在这里写下你的自我介绍，比如你的职业、兴趣、性格、梦想等）</p>
+                <p class="placeholder-text">例如：我是一名热爱创作的设计师 / 开发者 / 写作者，喜欢用温柔的视角记录生活。</p>
+            </div>
+            <div class="about-grid">
+                <div class="about-card small-card">
+                    <span class="card-icon">✨</span>
+                    <h4>我的热爱</h4>
+                    <p class="placeholder-text">（写下你喜欢的事物）</p>
+                </div>
+                <div class="about-card small-card">
+                    <span class="card-icon">🌟</span>
+                    <h4>我的目标</h4>
+                    <p class="placeholder-text">（写下你正在追求的目标）</p>
+                </div>
+                <div class="about-card small-card">
+                    <span class="card-icon">🦦</span>
+                    <h4>我的生活</h4>
+                    <p class="placeholder-text">（写下你的日常或生活方式）</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 技能 -->
+    <section id="skills" class="section skills">
+        <div class="section-header">
+            <span class="section-icon">✦</span>
+            <h2 class="section-title">技能 & 兴趣</h2>
+            <p class="section-desc">点亮属于你的小星星</p>
+        </div>
+        <div class="skills-cloud">
+            <div class="skill-bubble" data-level="0">
+                <span class="skill-icon">🎨</span>
+                <span class="skill-name">技能一</span>
+                <div class="skill-stars">
+                    <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                </div>
+            </div>
+            <div class="skill-bubble" data-level="0">
+                <span class="skill-icon">✏️</span>
+                <span class="skill-name">技能二</span>
+                <div class="skill-stars">
+                    <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                </div>
+            </div>
+            <div class="skill-bubble" data-level="0">
+                <span class="skill-icon">🎵</span>
+                <span class="skill-name">技能三</span>
+                <div class="skill-stars">
+                    <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                </div>
+            </div>
+            <div class="skill-bubble" data-level="0">
+                <span class="skill-icon">📷</span>
+                <span class="skill-name">技能四</span>
+                <div class="skill-stars">
+                    <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                </div>
+            </div>
+            <div class="skill-bubble" data-level="0">
+                <span class="skill-icon">💻</span>
+                <span class="skill-name">技能五</span>
+                <div class="skill-stars">
+                    <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                </div>
+            </div>
+            <div class="skill-bubble add-skill">
+                <span class="skill-icon">+</span>
+                <span class="skill-name">添加更多</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- 作品展示 -->
+    <section id="works" class="section works">
+        <div class="section-header">
+            <span class="section-icon">🌟</span>
+            <h2 class="section-title">我的作品</h2>
+            <p class="section-desc">这里将展示你的创作，先预留好位置</p>
+        </div>
+        <div class="works-grid">
+            <article class="work-card empty-card">
+                <div class="work-thumb">
+                    <span class="work-placeholder">✦</span>
+                </div>
+                <div class="work-info">
+                    <h3>作品名称 1</h3>
+                    <p>（作品描述，等待填入）</p>
+                    <div class="work-tags">
+                        <span>标签1</span>
+                        <span>标签2</span>
+                    </div>
+                </div>
+            </article>
+            <article class="work-card empty-card">
+                <div class="work-thumb">
+                    <span class="work-placeholder">🦦</span>
+                </div>
+                <div class="work-info">
+                    <h3>作品名称 2</h3>
+                    <p>（作品描述，等待填入）</p>
+                    <div class="work-tags">
+                        <span>标签1</span>
+                        <span>标签2</span>
+                    </div>
+                </div>
+            </article>
+            <article class="work-card empty-card">
+                <div class="work-thumb">
+                    <span class="work-placeholder">✨</span>
+                </div>
+                <div class="work-info">
+                    <h3>作品名称 3</h3>
+                    <p>（作品描述，等待填入）</p>
+                    <div class="work-tags">
+                        <span>标签1</span>
+                        <span>标签2</span>
+                    </div>
+                </div>
+            </article>
+            <article class="work-card add-card">
+                <div class="add-work-content">
+                    <span class="add-icon">+</span>
+                    <p>添加新作品</p>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <!-- 时间线 -->
+    <section id="timeline" class="section timeline">
+        <div class="section-header">
+            <span class="section-icon">⭐</span>
+            <h2 class="section-title">我的历程</h2>
+            <p class="section-desc">记录成长路上的重要时刻</p>
+        </div>
+        <div class="timeline-container">
+            <div class="timeline-line"></div>
+            <div class="timeline-item">
+                <div class="timeline-dot">✦</div>
+                <div class="timeline-card">
+                    <span class="timeline-date">20XX</span>
+                    <h3>重要时刻 1</h3>
+                    <p class="placeholder-text">（写下这个时刻的故事）</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot">🦦</div>
+                <div class="timeline-card">
+                    <span class="timeline-date">20XX</span>
+                    <h3>重要时刻 2</h3>
+                    <p class="placeholder-text">（写下这个时刻的故事）</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot">✨</div>
+                <div class="timeline-card">
+                    <span class="timeline-date">20XX</span>
+                    <h3>重要时刻 3</h3>
+                    <p class="placeholder-text">（写下这个时刻的故事）</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 联系我 -->
+    <section id="contact" class="section contact">
+        <div class="section-header">
+            <span class="section-icon">🎀</span>
+            <h2 class="section-title">联系我</h2>
+            <p class="section-desc">欢迎来我的小世界坐坐</p>
+        </div>
+        <div class="contact-content">
+            <div class="contact-card">
+                <div class="contact-avatar">
+                    <img src="images/logo.jpg" alt="我的头像">
+                    <div class="avatar-ring">
+                        <span>✦</span>
+                        <span>✧</span>
+                        <span>✦</span>
+                    </div>
+                </div>
+                <h3>让我们一起创造美好 ✦</h3>
+                <p class="placeholder-text">（这里可以放上你的邮箱或简短留言）</p>
+                <div class="social-links">
+                    <a href="#" class="social-link" aria-label="微博">
+                        <span>📧</span>
+                    </a>
+                    <a href="#" class="social-link" aria-label="GitHub">
+                        <span>🐙</span>
+                    </a>
+                    <a href="#" class="social-link" aria-label="小红书">
+                        <span>📕</span>
+                    </a>
+                    <a href="#" class="social-link" aria-label="Twitter">
+                        <span>🐦</span>
+                    </a>
+                </div>
+            </div>
+            <form class="contact-form" onsubmit="event.preventDefault(); showToast('消息已收到！海獭会帮你转达的 ✦')">
+                <div class="form-group">
+                    <label for="name">你的名字</label>
+                    <input type="text" id="name" placeholder="（ visitors 的名字）" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">邮箱</label>
+                    <input type="email" id="email" placeholder="（ visitors 的邮箱）" required>
+                </div>
+                <div class="form-group">
+                    <label for="message">想对我说的话</label>
+                    <textarea id="message" rows="4" placeholder="（ visitors 的留言）" required></textarea>
+                </div>
+                <button type="submit" class="submit-btn">
+                    <span>发送消息</span>
+                    <span class="btn-icon">🦦</span>
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="images/logo.jpg" alt="logo">
+                <span>© 2024 你的名字. All rights reserved.</span>
+            </div>
+            <p class="footer-quote">愿你的每一天都像海獭一样，被星星温柔包围 ✦</p>
+        </div>
+    </footer>
+
+    <!-- 提示消息 -->
+    <div class="toast" id="toast"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
