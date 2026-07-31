@@ -10,7 +10,7 @@ const SITE_CONTENT = {
     "范意聆"
   ],
   "navName": "Elaine Fan",
-  "heroSubtitle": "北京大学 · 信息管理 · 海獭与星星的收藏家 ✦",
+  "heroSubtitle": "✦ 北京大学本科在读 · 信息管理  ✦",
   "heroTags": [
     "🎓 北大新生",
     "🥋 跆拳道黑带",
@@ -18,7 +18,7 @@ const SITE_CONTENT = {
     "🎨 艺术爱好者"
   ],
   "aboutTitle": "Hi，我是 Elaine",
-  "aboutP1": "我刚从高中毕业，即将踏入 <strong>北京大学</strong> 攻读 <strong>信息管理</strong> 专业。从上海的国际学校到海外的 IB 体系，我对科学、语言与艺术始终保有真诚的好奇。",
+  "aboutP1": "我刚从高中毕业，即将踏入 <strong>北京大学</strong> 攻读 <strong>信息管理</strong> 专业。从上海中学国际学校到海外Canadian Academy 的 IB 体系，我对科学、语言与艺术始终保有真诚的好奇。",
   "aboutP2": "喜欢把想法变成作品——无论是一篇独立科研论文、一场跨文化的英语教学，还是一段用 Live2D 让角色活起来的动画。安静时爱滑雪与摄影，热闹时爱唱歌与跳舞。希望我的小世界，能为你带来一点点温柔的光 ✦",
   "smallCards": [
     {
@@ -41,7 +41,7 @@ const SITE_CONTENT = {
     {
       "icon": "🌐",
       "name": "三语",
-      "note": "英(母语)·中(母语)·日(中级)"
+      "note": "英(母语)·中(母语)·日(初级)"
     },
     {
       "icon": "🥋",
@@ -60,8 +60,8 @@ const SITE_CONTENT = {
     },
     {
       "icon": "📷",
-      "name": "滑雪 & 摄影",
-      "note": "Snow & Photo"
+      "name": "摄影",
+      "note": "Photography"
     },
     {
       "icon": "🎨",
