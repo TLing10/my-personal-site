@@ -127,7 +127,8 @@ const SITE_CONTENT = {
   ],
   "contactTitle": "让我们一起创造美好 ✦",
   "contactText": "有任何想聊的、想合作的，或只是想交个朋友，都可以联系我～",
-  "email": "elainefan10@icloud.com",
+  "wechat": "（在此填写你的微信号）",
+  "phone": "（在此填写你的电话）",
   "footerCopy": "© 2024 Elaine Fan. All rights reserved.",
   "footerQuote": "愿你的每一天都像海獭一样，被星星温柔包围 ✦"
 };
@@ -195,10 +196,12 @@ const SITE_CONTENT = {
 
     const cc = q('.contact-card');
     if (cc) {
-        if (cc.querySelector('h3')) cc.querySelector('h3').textContent = c.contactTitle;
-        if (cc.querySelector('p')) cc.querySelector('p').textContent = c.contactText;
-        const em = cc.querySelector('.email-pill');
-        if (em) { em.textContent = '✉️ ' + c.email; em.href = 'mailto:' + c.email; }
+        if (cc.querySelector('.contact-title')) cc.querySelector('.contact-title').textContent = c.contactTitle;
+        if (cc.querySelector('.contact-text')) cc.querySelector('.contact-text').textContent = c.contactText;
+        const cw = cc.querySelector('.chip-wechat'); if (cw) cw.textContent = c.wechat || '';
+        const cp = cc.querySelector('.chip-phone'); if (cp) cp.textContent = c.phone || '';
+        const wc = cc.querySelector('.wechat-chip'); if (wc) wc.href = c.wechat ? ('weixin://contacts/profile/' + c.wechat) : '#';
+        const pc = cc.querySelector('.phone-chip'); if (pc) pc.href = c.phone ? ('tel:' + c.phone) : '#';
     }
 
     if (q('.footer-logo span')) q('.footer-logo span').textContent = c.footerCopy;

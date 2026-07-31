@@ -1311,3 +1311,98 @@ body {
 }
 
 .hero-content { position: relative; z-index: 2; }
+
+/* ===== 联系方式：微信 + 电话 ===== */
+.contact-chips { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin: 18px 0 4px; }
+.contact-chip {
+    display: inline-flex; align-items: center; gap: 8px; text-decoration: none;
+    padding: 10px 16px; border-radius: 30px; font-weight: 700; font-size: .95rem;
+    background: rgba(255,255,255,.82); border: 1.5px solid rgba(139,111,92,.18); color: var(--brown);
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+.contact-chip i { font-size: 1.15rem; }
+.wechat-chip i { color: #07C160; }
+.phone-chip i { color: #5B8DEF; }
+.contact-chip:hover { transform: translateY(-2px); box-shadow: 0 6px 18px var(--shadow-hover); }
+.chip-wechat:empty::before, .chip-phone:empty::before { content: '（待填写）'; color: #c2b3aa; font-weight: 400; }
+
+.starboard-btn {
+    margin-top: 16px; border: none; cursor: pointer; font-weight: 700; font-size: 1rem;
+    padding: 13px 26px; border-radius: 30px; color: #fff;
+    background: linear-gradient(135deg, #FFD27A, #C8A8FF 60%, #9EC9FF);
+    box-shadow: 0 8px 22px rgba(160,130,220,.35);
+    transition: transform .15s ease, filter .15s ease;
+}
+.starboard-btn:hover { transform: translateY(-2px); filter: brightness(1.04); }
+.starboard-btn:active { transform: scale(.97); }
+.starboard-hint { font-size: .8rem; color: var(--text-light); margin: 10px 0 0; }
+
+/* ===== 留言星盘 / 留言墙 ===== */
+.starboard {
+    position: fixed; inset: 0; z-index: 100; display: none; overflow: hidden;
+    background: linear-gradient(160deg, #1b1640, #2a1f5c 50%, #3a2a6b);
+    color: #fff;
+}
+.starboard.open { display: block; animation: sbFade .3s ease; }
+@keyframes sbFade { from { opacity: 0; } to { opacity: 1; } }
+.starboard-inner {
+    position: relative; z-index: 2; height: 100%;
+    display: flex; flex-direction: column; padding: 18px 16px calc(20px + env(safe-area-inset-bottom));
+}
+.starboard-top { display: flex; align-items: center; justify-content: space-between; }
+.starboard-top h2 { margin: 0; font-size: 1.3rem; }
+.sb-close {
+    width: 38px; height: 38px; border-radius: 50%; border: none; cursor: pointer;
+    font-size: 1.1rem; background: rgba(255,255,255,.15); color: #fff;
+}
+.sb-close:hover { background: rgba(255,255,255,.28); }
+.starboard-sub { margin: 6px 0 10px; font-size: .85rem; color: rgba(255,255,255,.7); }
+.star-field { position: relative; flex: 1; overflow: auto; }
+.star {
+    position: absolute; cursor: pointer; font-size: 1.6rem; line-height: 1; user-select: none;
+    filter: drop-shadow(0 0 6px rgba(255,236,170,.85));
+    transition: transform .2s ease; animation: twinkle 3s ease-in-out infinite;
+}
+.star:hover { transform: scale(1.35); }
+.star .star-label {
+    display: block; font-size: .62rem; text-align: center; margin-top: 2px;
+    color: rgba(255,255,255,.85); max-width: 84px; overflow: hidden;
+    text-overflow: ellipsis; white-space: nowrap;
+}
+@keyframes twinkle { 0%,100% { opacity: .75; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-4px); } }
+.write-msg-btn {
+    margin-top: 12px; align-self: center; border: none; cursor: pointer; font-weight: 700; font-size: .98rem;
+    padding: 12px 24px; border-radius: 30px; color: #3a2a6b;
+    background: linear-gradient(135deg, #FFE7A3, #FFD0E6); box-shadow: 0 6px 18px rgba(0,0,0,.25);
+}
+.write-msg-btn:active { transform: scale(.97); }
+
+/* 查看 / 写留言 弹层 */
+.msg-modal, .write-modal {
+    position: absolute; inset: 0; z-index: 5; display: none;
+    align-items: center; justify-content: center; padding: 20px;
+    background: rgba(10,8,30,.6); backdrop-filter: blur(3px);
+}
+.msg-modal.show, .write-modal.show { display: flex; animation: sbFade .25s ease; }
+.msg-card, .write-card {
+    position: relative; width: min(440px, 92vw); max-height: 86vh; overflow: auto;
+    background: linear-gradient(160deg, #FFF7F0, #F3F0FF); color: var(--text);
+    border-radius: 22px; padding: 24px 22px; box-shadow: 0 20px 60px rgba(0,0,0,.4);
+}
+.msg-close {
+    position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border-radius: 50%;
+    border: none; cursor: pointer; font-size: 1rem; background: rgba(139,111,92,.12); color: var(--brown);
+}
+.msg-body { font-size: 1.05rem; line-height: 1.7; white-space: pre-wrap; word-break: break-word; margin-top: 6px; }
+.msg-body img, .msg-body video { max-width: 100%; border-radius: 14px; margin-top: 12px; display: block; }
+.msg-body a { color: #7a5fd0; }
+.msg-meta { margin-top: 14px; font-size: .8rem; color: var(--text-light); text-align: right; }
+.write-card h3 { margin: 0 0 14px; }
+.write-card .form-group { margin-bottom: 12px; }
+.write-card label { display: block; font-size: .85rem; font-weight: 600; margin-bottom: 5px; }
+.write-card input, .write-card textarea {
+    width: 100%; padding: 11px 13px; border: 1.5px solid rgba(139,111,92,.2); border-radius: 12px;
+    font-size: .95rem; font-family: inherit; background: #fff; outline: none; color: var(--text); resize: vertical;
+}
+.write-card input:focus, .write-card textarea:focus { border-color: var(--pink); }
+.write-card .submit-btn { width: 100%; margin-top: 6px; }

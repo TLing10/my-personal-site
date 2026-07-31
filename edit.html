@@ -142,6 +142,7 @@
   <div class="topbar">
     <div class="brand">🦦 Elaine 的编辑台</div>
     <a class="btn-ghost" href="index.html" target="_blank">🔗 看网站</a>
+    <button id="msgAdminBtn" class="btn-ghost">💬 留言管理</button>
     <button id="resetBtn" class="btn btn-soft">↺ 重置</button>
   </div>
 
@@ -161,6 +162,14 @@
 
   <div id="editorBody">
     <form id="form" onsubmit="return false"></form>
+  </div>
+
+  <div id="msgAdmin" style="display:none; max-width:760px; margin:0 auto; padding:0 16px 30px;">
+    <div class="edit-section">
+      <h2 class="sec-title">💬 留言管理</h2>
+      <p class="tip">这里列出所有留言，你可以删除不当内容。删除后约 1–2 分钟生效。</p>
+      <div id="msgAdminList"></div>
+    </div>
   </div>
 
   <div class="savebar">

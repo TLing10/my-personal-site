@@ -462,3 +462,193 @@ window.addEventListener('load', () => {
         showToast('欢迎来到你的小世界 ✦ 点击任意位置试试看！');
     }, 1500);
 });
+
+/* =========================================================
+   留言星盘 / 留言墙
+   留言存储在仓库的 data/messages.json（同源读取，永久保留）
+   访客留言通过 GitHub API 提交（需用「仅本仓库」细粒度令牌）
+   ========================================================= */
+const MSG_REPO = 'TLing10/my-personal-site';
+const MSG_PATH = 'data/messages.json';
+let MSG_PAT = '__FINE_GRAINED_TOKEN__';   // ← 把这里替换成你的「仅本仓库」细粒度令牌
+function getMsgPat() {
+    return (window.__msgPatOverride && window.__msgPatOverride !== true) ? window.__msgPatOverride : MSG_PAT;
+}
+
+function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function toBase64(str) {
+    const bytes = new TextEncoder().encode(str);
+    let bin = '';
+    bytes.forEach(b => bin += String.fromCharCode(b));
+    return btoa(bin);
+}
+function decodeBase64(b64) {
+    const bin = atob(b64);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new TextDecoder().decode(bytes);
+}
+function hashStr(s) {
+    let h = 2166136261;
+    for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+    return h >>> 0;
+}
+function rng(seed) {
+    let s = seed >>> 0;
+    return () => { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+}
+function formatDate(iso) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (isNaN(d)) return '';
+    return d.getFullYear() + '.' + String(d.getMonth() + 1).padStart(2, '0') + '.' + String(d.getDate()).padStart(2, '0');
+}
+function embedVideo(url) {
+    try {
+        const u = new URL(url);
+        let src = null;
+        if (/youtube\.com|youtu\.be/.test(u.hostname)) {
+            let id = u.searchParams.get('v');
+            if (u.hostname === 'youtu.be') id = u.pathname.slice(1);
+            if (id) src = 'https://www.youtube.com/embed/' + id;
+        } else if (/bilibili\.com/.test(u.hostname)) {
+            const bvid = u.searchParams.get('bvid') || (u.pathname.match(/\/(BV[\w]+)/) || [])[1];
+            if (bvid) src = 'https://player.bilibili.com/player.html?bvid=' + bvid + '&autoplay=0';
+        }
+        if (src) {
+            const f = document.createElement('iframe');
+            f.src = src;
+            f.style.cssText = 'width:100%;aspect-ratio:16/9;border:0;border-radius:14px;margin-top:12px';
+            f.allowFullscreen = true;
+            return f;
+        }
+    } catch (e) { /* ignore */ }
+    return null;
+}
+
+async function loadMessages() {
+    try {
+        const r = await fetch(MSG_PATH + '?t=' + Date.now());
+        if (!r.ok) return [];
+        const data = await r.json();
+        return Array.isArray(data) ? data : [];
+    } catch (e) { return []; }
+}
+
+function renderStars(messages) {
+    const field = document.getElementById('starField');
+    if (!field) return;
+    field.innerHTML = '';
+    messages.forEach((m, i) => {
+        const r = rng(hashStr(m.id || ('' + i)));
+        const el = document.createElement('div');
+        el.className = 'star';
+        el.style.left = (8 + r() * 80) + '%';
+        el.style.top = (6 + r() * 84) + '%';
+        el.style.fontSize = (1.2 + r() * 1.1) + 'rem';
+        el.style.animationDelay = (r() * 3) + 's';
+        el.innerHTML = '⭐<span class="star-label">' + escapeHtml(m.name || '匿名') + '</span>';
+        el.addEventListener('click', () => openMsgModal(m));
+        field.appendChild(el);
+    });
+    const hint = document.querySelector('.starboard-sub');
+    if (hint) hint.textContent = messages.length
+        ? ('已收集 ' + messages.length + ' 颗星星，每一颗都是一位来过的朋友 ✦')
+        : '还没有星星，做第一个留言的人吧 ✦';
+}
+
+function openMsgModal(m) {
+    const body = document.getElementById('msgBody');
+    body.innerHTML = '';
+    const text = document.createElement('div');
+    text.textContent = m.text || '';
+    body.appendChild(text);
+    if (m.image && /^https?:\/\//i.test(m.image)) {
+        const img = document.createElement('img');
+        img.src = m.image; img.alt = '留言图片'; img.loading = 'lazy';
+        body.appendChild(img);
+    }
+    if (m.video && /^https?:\/\//i.test(m.video)) {
+        const f = embedVideo(m.video);
+        if (f) body.appendChild(f);
+        else {
+            const a = document.createElement('a');
+            a.href = m.video; a.target = '_blank'; a.rel = 'noopener';
+            a.textContent = '▶ 打开视频链接';
+            body.appendChild(a);
+        }
+    }
+    document.getElementById('msgMeta').textContent = (m.name || '匿名') + ' · ' + formatDate(m.createdAt);
+    document.getElementById('msgModal').classList.add('show');
+}
+
+async function submitMessage() {
+    const name = document.getElementById('msgName').value.trim();
+    const text = document.getElementById('msgText').value.trim();
+    const image = document.getElementById('msgImage').value.trim();
+    const video = document.getElementById('msgVideo').value.trim();
+    if (!text && !image && !video) { showToast('写点什么再发送吧 ✦'); return; }
+    const pat = getMsgPat();
+    if (pat.indexOf('__') === 0) { showToast('留言功能待配置：管理员在 script.js 填入细粒度令牌后即可 ✦'); return; }
+
+    const btn = document.getElementById('submitMsg');
+    btn.disabled = true;
+    try {
+        const url = `https://api.github.com/repos/${MSG_REPO}/contents/${MSG_PATH}`;
+        const headers = { Authorization: 'Bearer ' + pat, Accept: 'application/vnd.github+json' };
+        const meta = await fetch(url, { headers }).then(r => r.json());
+        let arr = [];
+        if (meta.content) arr = JSON.parse(decodeBase64(meta.content));
+        if (!Array.isArray(arr)) arr = [];
+        const msg = {
+            id: 'm' + Date.now() + Math.floor(Math.random() * 1000),
+            name: name || '匿名朋友',
+            text, image: image || '', video: video || '',
+            createdAt: new Date().toISOString()
+        };
+        arr.push(msg);
+        const res = await fetch(url, {
+            method: 'PUT',
+            headers: { ...headers, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: '💬 新留言 from ' + (name || '匿名'), content: toBase64(JSON.stringify(arr, null, 2)), sha: meta.sha })
+        });
+        if (!res.ok) {
+            const e = await res.json().catch(() => ({}));
+            throw new Error(e.message || ('HTTP ' + res.status));
+        }
+        showToast('这颗星星已挂上星盘 ✦');
+        document.getElementById('writeModal').classList.remove('show');
+        ['msgName', 'msgText', 'msgImage', 'msgVideo'].forEach(id => document.getElementById(id).value = '');
+        const fresh = await loadMessages();
+        renderStars(fresh);
+    } catch (err) {
+        let msg = err.message || String(err);
+        if (/Failed to fetch|NetworkError|api\.github/i.test(msg)) msg += '（多为网络无法访问 api.github.com，请确认网络/代理）';
+        showToast('发送失败：' + msg);
+    }
+    btn.disabled = false;
+}
+
+async function initMessageWall() {
+    const msgs = await loadMessages();
+    renderStars(msgs);
+
+    const board = document.getElementById('starboard');
+    document.getElementById('openStarboard').addEventListener('click', () => {
+        board.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        loadMessages().then(renderStars);
+    });
+    document.getElementById('closeStarboard').addEventListener('click', () => {
+        board.classList.remove('open');
+        document.body.style.overflow = '';
+    });
+    document.getElementById('openWrite').addEventListener('click', () => document.getElementById('writeModal').classList.add('show'));
+    document.getElementById('closeWrite').addEventListener('click', () => document.getElementById('writeModal').classList.remove('show'));
+    document.getElementById('closeMsg').addEventListener('click', () => document.getElementById('msgModal').classList.remove('show'));
+    document.getElementById('submitMsg').addEventListener('click', submitMessage);
+}
+
+if (document.getElementById('openStarboard')) initMessageWall();

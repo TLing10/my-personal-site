@@ -271,34 +271,15 @@
                     <img src="images/logo.jpg" alt="我的头像">
                     <div class="avatar-ring"><span>✦</span><span>✧</span><span>✦</span></div>
                 </div>
-                <h3>让我们一起创造美好 ✦</h3>
-                <p>有任何想聊的、想合作的，或只是想交个朋友，都可以联系我～</p>
-                <a class="email-pill" href="mailto:elainefan10@icloud.com">✉️ elainefan10@icloud.com</a>
-                <div class="social-links">
-                    <a href="#" class="social-link sl-wechat" aria-label="微信"><i class="fa-brands fa-weixin"></i></a>
-                    <a href="#" class="social-link sl-xhs" aria-label="小红书"><i class="fa-solid fa-book-open"></i></a>
-                    <a href="#" class="social-link sl-ig" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="#" class="social-link sl-gh" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+                <h3 class="contact-title">让我们一起创造美好 ✦</h3>
+                <p class="contact-text">有任何想聊的、想合作的，或只是想交个朋友，都可以联系我～</p>
+                <div class="contact-chips">
+                    <a class="contact-chip wechat-chip" id="wechatChip" href="#"><i class="fa-brands fa-weixin"></i><span class="chip-wechat"></span></a>
+                    <a class="contact-chip phone-chip" id="phoneChip" href="#"><i class="fa-solid fa-phone"></i><span class="chip-phone"></span></a>
                 </div>
+                <button class="starboard-btn" id="openStarboard">✨ 留言星盘</button>
+                <p class="starboard-hint">点开星盘，看看朋友们留下的星星 ✦</p>
             </div>
-            <form class="contact-form" onsubmit="event.preventDefault(); showToast('消息已收到！我会尽快回复你 ✦')">
-                <div class="form-group">
-                    <label for="name">你的名字</label>
-                    <input type="text" id="name" placeholder="（你的名字）" required>
-                </div>
-                <div class="form-group">
-                    <label for="email">邮箱</label>
-                    <input type="email" id="email" placeholder="（你的邮箱）" required>
-                </div>
-                <div class="form-group">
-                    <label for="message">想对我说的话</label>
-                    <textarea id="message" rows="4" placeholder="（写下你的留言）" required></textarea>
-                </div>
-                <button type="submit" class="submit-btn">
-                    <span>发送消息</span>
-                    <span class="btn-icon">🦦</span>
-                </button>
-            </form>
         </div>
     </section>
 
@@ -315,6 +296,53 @@
 
     <!-- 提示消息 -->
     <div class="toast" id="toast"></div>
+
+    <!-- 留言星盘 / 留言墙 -->
+    <div class="starboard" id="starboard" aria-hidden="true">
+        <div class="starboard-inner">
+            <div class="starboard-top">
+                <h2>✨ 留言星盘</h2>
+                <button class="sb-close" id="closeStarboard" aria-label="关闭">✕</button>
+            </div>
+            <p class="starboard-sub">每一颗星星，都是一位来过这里的朋友 ✦</p>
+            <div class="star-field" id="starField"></div>
+            <button class="write-msg-btn" id="openWrite">✍️ 写一句留言</button>
+        </div>
+
+        <!-- 查看留言 -->
+        <div class="msg-modal" id="msgModal" aria-hidden="true">
+            <div class="msg-card">
+                <button class="msg-close" id="closeMsg">✕</button>
+                <div class="msg-body" id="msgBody"></div>
+                <div class="msg-meta" id="msgMeta"></div>
+            </div>
+        </div>
+
+        <!-- 写留言 -->
+        <div class="write-modal" id="writeModal" aria-hidden="true">
+            <div class="write-card">
+                <button class="msg-close" id="closeWrite">✕</button>
+                <h3>✍️ 留下你的星星</h3>
+                <div class="form-group">
+                    <label>你的名字</label>
+                    <input type="text" id="msgName" placeholder="（怎么称呼你）" maxlength="20">
+                </div>
+                <div class="form-group">
+                    <label>想说的话</label>
+                    <textarea id="msgText" rows="4" placeholder="写点什么吧～" maxlength="500"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>图片链接（可选）</label>
+                    <input type="url" id="msgImage" placeholder="https://... 图片地址">
+                </div>
+                <div class="form-group">
+                    <label>视频链接（可选）</label>
+                    <input type="url" id="msgVideo" placeholder="https://... 视频地址（B站 / YouTube 等）">
+                </div>
+                <button class="submit-btn" id="submitMsg"><span>发送这颗星星</span><span class="btn-icon">✦</span></button>
+            </div>
+        </div>
+    </div>
 
     <!-- 文字内容（只改 content.js 即可修改网站所有文字） -->
     <script src="content.js"></script>

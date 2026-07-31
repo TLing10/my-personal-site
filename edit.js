@@ -83,10 +83,12 @@ const FILLER = `/* ===== 下面这段会自动把上面的文字填进页面，�
 
     const cc = q('.contact-card');
     if (cc) {
-        if (cc.querySelector('h3')) cc.querySelector('h3').textContent = c.contactTitle;
-        if (cc.querySelector('p')) cc.querySelector('p').textContent = c.contactText;
-        const em = cc.querySelector('.email-pill');
-        if (em) { em.textContent = '✉️ ' + c.email; em.href = 'mailto:' + c.email; }
+        if (cc.querySelector('.contact-title')) cc.querySelector('.contact-title').textContent = c.contactTitle;
+        if (cc.querySelector('.contact-text')) cc.querySelector('.contact-text').textContent = c.contactText;
+        const cw = cc.querySelector('.chip-wechat'); if (cw) cw.textContent = c.wechat || '';
+        const cp = cc.querySelector('.chip-phone'); if (cp) cp.textContent = c.phone || '';
+        const wc = cc.querySelector('.wechat-chip'); if (wc) wc.href = c.wechat ? ('weixin://contacts/profile/' + c.wechat) : '#';
+        const pc = cc.querySelector('.phone-chip'); if (pc) pc.href = c.phone ? ('tel:' + c.phone) : '#';
     }
 
     if (q('.footer-logo span')) q('.footer-logo span').textContent = c.footerCopy;
@@ -161,7 +163,8 @@ const SCHEMA = [
         fields: [
             { key: 'contactTitle', label: '联系标题', type: 'input' },
             { key: 'contactText', label: '联系说明', type: 'textarea', rows: 2 },
-            { key: 'email', label: '邮箱', type: 'input' },
+            { key: 'wechat', label: '微信号', type: 'input' },
+            { key: 'phone', label: '电话', type: 'input' },
             { key: 'footerCopy', label: '页脚版权', type: 'input' },
             { key: 'footerQuote', label: '页脚一句话', type: 'input' },
         ]
@@ -176,6 +179,12 @@ function toBase64(str) {
     let bin = '';
     bytes.forEach(b => bin += String.fromCharCode(b));
     return btoa(bin);
+}
+function decodeBase64(b64) {
+    const bin = atob(b64);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new TextDecoder().decode(bytes);
 }
 function getPath(obj, path) { return path.split('.').reduce((o, k) => (o == null ? undefined : o[k]), obj); }
 function setPath(obj, path, val) {
@@ -380,6 +389,57 @@ function initEditor() {
     $('#loadBtn').onclick = doLoad;
     $('#saveBtn').onclick = doSave;
     $('#resetBtn').onclick = () => { if (STATE && confirm('放弃未保存的修改，重新从线上载入？')) doLoad(); };
+    $('#msgAdminBtn').onclick = () => {
+        const p = $('#msgAdmin');
+        const show = p.style.display === 'none';
+        p.style.display = show ? 'block' : 'none';
+        if (show) loadMsgAdmin();
+    };
+}
+
+/* ---------------- 留言管理 ---------------- */
+const MSG_API = `https://api.github.com/repos/${REPO}/contents/data/messages.json`;
+
+async function loadMsgAdmin() {
+    if (!TOKEN) { toast('请先载入内容（需要令牌）'); return; }
+    const headers = { Authorization: 'Bearer ' + TOKEN, Accept: 'application/vnd.github+json' };
+    let arr = [];
+    try {
+        const meta = await fetch(MSG_API, { headers }).then(r => r.json());
+        if (meta.content) arr = JSON.parse(decodeBase64(meta.content));
+        if (!Array.isArray(arr)) arr = [];
+    } catch (e) { arr = []; }
+    const list = $('#msgAdminList');
+    list.innerHTML = '';
+    if (arr.length === 0) { list.innerHTML = '<p class="tip">还没有留言。</p>'; return; }
+    arr.forEach((m, i) => {
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex; align-items:center; gap:10px; justify-content:space-between; padding:12px; margin-bottom:10px; background:rgba(255,255,255,.6); border:1px solid var(--line); border-radius:14px;';
+        const txt = document.createElement('div');
+        const preview = (m.text || '').slice(0, 50) + ((m.text || '').length > 50 ? '…' : '');
+        txt.innerHTML = '<b>' + escapeHtml(m.name || '匿名') + '</b>：' + escapeHtml(preview);
+        const del = document.createElement('button');
+        del.className = 'mini del'; del.textContent = '🗑 删除';
+        del.onclick = async () => {
+            if (!confirm('确定删除这条留言？')) return;
+            arr.splice(i, 1);
+            try {
+                const meta = await fetch(MSG_API, { headers }).then(r => r.json());
+                await fetch(MSG_API, {
+                    method: 'PUT',
+                    headers: { ...headers, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: '🗑 删除留言', content: toBase64(JSON.stringify(arr, null, 2)), sha: meta.sha })
+                });
+                toast('已删除 ✦');
+                loadMsgAdmin();
+            } catch (e) { toast('删除失败：' + (e.message || e)); }
+        };
+        row.appendChild(txt); row.appendChild(del);
+        list.appendChild(row);
+    });
+}
+function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 /* 兼容 DOMContentLoaded 已触发（脚本晚于解析执行）的情况 */
 if (document.readyState === 'loading') {
