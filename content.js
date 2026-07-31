@@ -10,7 +10,7 @@ const SITE_CONTENT = {
     "范意聆"
   ],
   "navName": "Elaine Fan",
-  "heroSubtitle": "北京大学 · 信息管理 · 海獭与星星的收藏家 ✦",
+  "heroSubtitle": "✦ 北京大学在读本科 · 信息管理 ✦",
   "heroTags": [
     "🎓 北大新生",
     "🥋 跆拳道黑带",
