@@ -276,10 +276,29 @@
                 <div class="contact-chips">
                     <a class="contact-chip wechat-chip" id="wechatChip" href="#"><i class="fa-brands fa-weixin"></i><span class="chip-wechat"></span></a>
                     <a class="contact-chip phone-chip" id="phoneChip" href="#"><i class="fa-solid fa-phone"></i><span class="chip-phone"></span></a>
+                    <a class="contact-chip email-chip" id="emailChip" href="#"><i class="fa-solid fa-envelope"></i><span class="chip-email"></span></a>
                 </div>
                 <button class="starboard-btn" id="openStarboard">✨ 留言星盘</button>
                 <p class="starboard-hint">点开星盘，看看朋友们留下的星星 ✦</p>
             </div>
+
+            <form class="contact-form" id="contactForm">
+                <h3 class="form-title">✉️ 悄悄给我发邮件</h3>
+                <p class="form-sub">私事、合作、或只是想说点什么，都可以直接发到我邮箱 ✦</p>
+                <div class="form-group">
+                    <label for="cName">你的名字</label>
+                    <input type="text" id="cName" placeholder="（怎么称呼你）">
+                </div>
+                <div class="form-group">
+                    <label for="cEmail">你的邮箱</label>
+                    <input type="email" id="cEmail" placeholder="（方便我回复你）">
+                </div>
+                <div class="form-group">
+                    <label for="cMessage">想对我说的话</label>
+                    <textarea id="cMessage" rows="4" placeholder="（写点什么吧～）"></textarea>
+                </div>
+                <button type="submit" class="submit-btn"><span>发送邮件</span><span class="btn-icon">🦦</span></button>
+            </form>
         </div>
     </section>
 
@@ -332,12 +351,14 @@
                     <textarea id="msgText" rows="4" placeholder="写点什么吧～" maxlength="500"></textarea>
                 </div>
                 <div class="form-group">
-                    <label>图片链接（可选）</label>
-                    <input type="url" id="msgImage" placeholder="https://... 图片地址">
+                    <label>📷 传张图片（从相册选，可选）</label>
+                    <input type="file" id="msgImageFile" accept="image/*" class="file-input">
+                    <div class="upload-preview" id="imgPreview"></div>
                 </div>
                 <div class="form-group">
-                    <label>视频链接（可选）</label>
-                    <input type="url" id="msgVideo" placeholder="https://... 视频地址（B站 / YouTube 等）">
+                    <label>🎬 传个视频（从相册选，可选）</label>
+                    <input type="file" id="msgVideoFile" accept="video/*" class="file-input">
+                    <div class="upload-preview" id="vidPreview"></div>
                 </div>
                 <button class="submit-btn" id="submitMsg"><span>发送这颗星星</span><span class="btn-icon">✦</span></button>
             </div>

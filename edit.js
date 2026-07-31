@@ -87,8 +87,10 @@ const FILLER = `/* ===== 下面这段会自动把上面的文字填进页面，�
         if (cc.querySelector('.contact-text')) cc.querySelector('.contact-text').textContent = c.contactText;
         const cw = cc.querySelector('.chip-wechat'); if (cw) cw.textContent = c.wechat || '';
         const cp = cc.querySelector('.chip-phone'); if (cp) cp.textContent = c.phone || '';
+        const ce = cc.querySelector('.chip-email'); if (ce) ce.textContent = c.email || '';
         const wc = cc.querySelector('.wechat-chip'); if (wc) wc.href = c.wechat ? ('weixin://contacts/profile/' + c.wechat) : '#';
         const pc = cc.querySelector('.phone-chip'); if (pc) pc.href = c.phone ? ('tel:' + c.phone) : '#';
+        const ec = cc.querySelector('.email-chip'); if (ec) ec.href = c.email ? ('mailto:' + c.email) : '#';
     }
 
     if (q('.footer-logo span')) q('.footer-logo span').textContent = c.footerCopy;
@@ -165,6 +167,7 @@ const SCHEMA = [
             { key: 'contactText', label: '联系说明', type: 'textarea', rows: 2 },
             { key: 'wechat', label: '微信号', type: 'input' },
             { key: 'phone', label: '电话', type: 'input' },
+            { key: 'email', label: '邮箱', type: 'input' },
             { key: 'footerCopy', label: '页脚版权', type: 'input' },
             { key: 'footerQuote', label: '页脚一句话', type: 'input' },
         ]

@@ -470,7 +470,7 @@ window.addEventListener('load', () => {
    ========================================================= */
 const MSG_REPO = 'TLing10/my-personal-site';
 const MSG_PATH = 'data/messages.json';
-let MSG_PAT = '__FINE_GRAINED_TOKEN__';   // ← 把这里替换成你的「仅本仓库」细粒度令牌
+let MSG_PAT = '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';   // 「仅本仓库 / Contents 读写」细粒度令牌（公开在前端，权限仅限于本仓库）
 let messagesCache = [];   // 内存缓存，提交后立即可见、不依赖 Pages 重建
 function getMsgPat() {
     return (window.__msgPatOverride && window.__msgPatOverride !== true) ? window.__msgPatOverride : MSG_PAT;
@@ -572,34 +572,140 @@ function openMsgModal(m) {
         img.src = m.image; img.alt = '留言图片'; img.loading = 'lazy';
         body.appendChild(img);
     }
-    if (m.video && /^https?:\/\//i.test(m.video)) {
-        const f = embedVideo(m.video);
-        if (f) body.appendChild(f);
-        else {
-            const a = document.createElement('a');
-            a.href = m.video; a.target = '_blank'; a.rel = 'noopener';
-            a.textContent = '▶ 打开视频链接';
-            body.appendChild(a);
+    if (m.video) {
+        const isDirect = /\.(mp4|webm|ogg|mov)(\?|$)/i.test(m.video) || /tling10\.github\.io\/.*\/uploads\//i.test(m.video);
+        if (isDirect) {
+            const v = document.createElement('video');
+            v.src = m.video; v.controls = true;
+            v.style.cssText = 'width:100%;border-radius:14px;margin-top:12px;background:#000';
+            body.appendChild(v);
+        } else {
+            const f = embedVideo(m.video);
+            if (f) body.appendChild(f);
+            else {
+                const a = document.createElement('a');
+                a.href = m.video; a.target = '_blank'; a.rel = 'noopener';
+                a.textContent = '▶ 打开视频链接';
+                body.appendChild(a);
+            }
         }
     }
     document.getElementById('msgMeta').textContent = (m.name || '匿名') + ' · ' + formatDate(m.createdAt);
     document.getElementById('msgModal').classList.add('show');
 }
 
+/* ---------- 媒体上传：从相册选图/视频，压缩后存进仓库 data/uploads/ ---------- */
+function blobToBase64(blob) {
+    return new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve(String(r.result).split(',')[1]);
+        r.onerror = () => reject(new Error('文件读取失败'));
+        r.readAsDataURL(blob);
+    });
+}
+function compressImage(file, maxDim = 1280, quality = 0.82) {
+    return new Promise((resolve, reject) => {
+        const url = URL.createObjectURL(file);
+        const img = new Image();
+        img.onload = () => {
+            let { width, height } = img;
+            if (width > maxDim || height > maxDim) {
+                const r = Math.min(maxDim / width, maxDim / height);
+                width = Math.round(width * r); height = Math.round(height * r);
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = width; canvas.height = height;
+            canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+            URL.revokeObjectURL(url);
+            canvas.toBlob(b => b ? resolve(b) : reject(new Error('图片压缩失败')), 'image/jpeg', quality);
+        };
+        img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('图片无法读取')); };
+        img.src = url;
+    });
+}
+function ghHeaders(pat, extra) {
+    return Object.assign({ Authorization: 'Bearer ' + pat, Accept: 'application/vnd.github+json' }, extra || {});
+}
+async function putContents(path, b64, pat, message) {
+    const url = `https://api.github.com/repos/${MSG_REPO}/contents/${path}`;
+    const res = await fetch(url, {
+        method: 'PUT',
+        headers: ghHeaders(pat, { 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ message, content: b64 })
+    });
+    if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.message || ('图片上传失败 HTTP ' + res.status)); }
+    return `https://tling10.github.io/my-personal-site/${path}`;
+}
+async function commitBlob(path, b64, pat, message) {
+    const base = `https://api.github.com/repos/${MSG_REPO}`;
+    const h = ghHeaders(pat, { 'Content-Type': 'application/json' });
+    const blob = await fetch(base + '/git/blobs', { method: 'POST', headers: h, body: JSON.stringify({ content: b64, encoding: 'base64' }) }).then(r => r.json());
+    if (!blob.sha) throw new Error('视频上传失败：blob 创建失败');
+    const ref = await fetch(base + '/git/refs/heads/main', { headers: h }).then(r => r.json());
+    const baseSha = ref.object.sha;
+    const baseCommit = await fetch(base + '/git/commits/' + baseSha, { headers: h }).then(r => r.json());
+    const tree = await fetch(base + '/git/trees', { method: 'POST', headers: h, body: JSON.stringify({ base_tree: baseCommit.tree.sha, tree: [{ path, mode: '100644', type: 'blob', sha: blob.sha }] }) }).then(r => r.json());
+    const commit = await fetch(base + '/git/commits', { method: 'POST', headers: h, body: JSON.stringify({ message, tree: tree.sha, parents: [baseSha] }) }).then(r => r.json());
+    const up = await fetch(base + '/git/refs/heads/main', { method: 'PATCH', headers: h, body: JSON.stringify({ sha: commit.sha }) });
+    if (!up.ok) throw new Error('视频上传失败：提交未生效');
+    return `https://tling10.github.io/my-personal-site/${path}`;
+}
+async function uploadMedia(path, b64, pat, isVideo) {
+    // 图片走 Contents API（体积小）；视频走 Git Database API（支持大文件，上限约 100MB）
+    if (isVideo) return commitBlob(path, b64, pat, '🎬 上传视频 ' + path);
+    return putContents(path, b64, pat, '📷 上传图片 ' + path);
+}
+
+function bindUploadPreview(inputId, previewId, kind) {
+    const input = document.getElementById(inputId);
+    const box = document.getElementById(previewId);
+    if (!input || !box) return;
+    input.addEventListener('change', () => {
+        box.innerHTML = '';
+        const file = input.files[0];
+        if (!file) return;
+        const url = URL.createObjectURL(file);
+        if (kind === 'image') {
+            const img = document.createElement('img');
+            img.src = url; img.className = 'preview-thumb';
+            box.appendChild(img);
+        } else {
+            const v = document.createElement('video');
+            v.src = url; v.className = 'preview-thumb'; v.controls = true; v.muted = true;
+            box.appendChild(v);
+        }
+    });
+}
+
 async function submitMessage() {
     const name = document.getElementById('msgName').value.trim();
     const text = document.getElementById('msgText').value.trim();
-    const image = document.getElementById('msgImage').value.trim();
-    const video = document.getElementById('msgVideo').value.trim();
-    if (!text && !image && !video) { showToast('写点什么再发送吧 ✦'); return; }
+    const imgFile = document.getElementById('msgImageFile').files[0];
+    const vidFile = document.getElementById('msgVideoFile').files[0];
+    if (!text && !imgFile && !vidFile) { showToast('写点什么，或传张图/视频再发送吧 ✦'); return; }
     const pat = getMsgPat();
     if (pat.indexOf('__') === 0) { showToast('留言功能待配置：管理员在 script.js 填入细粒度令牌后即可 ✦'); return; }
 
     const btn = document.getElementById('submitMsg');
     btn.disabled = true;
     try {
+        let image = '', video = '';
+        if (imgFile) {
+            showToast('正在压缩并上传图片…');
+            const compressed = await compressImage(imgFile);
+            const b64 = await blobToBase64(compressed);
+            image = await uploadMedia('data/uploads/m' + Date.now() + '.jpg', b64, pat, false);
+        }
+        if (vidFile) {
+            if (vidFile.size > 50 * 1024 * 1024) { showToast('视频太大啦（>50MB 传不了），换个小点的 ✦'); btn.disabled = false; return; }
+            showToast('正在上传视频（可能需要一点时间）…');
+            const b64 = await blobToBase64(vidFile);
+            const ext = (vidFile.name.split('.').pop() || 'mp4').toLowerCase().replace(/[^a-z0-9]/g, '') || 'mp4';
+            video = await uploadMedia('data/uploads/m' + Date.now() + '.' + ext, b64, pat, true);
+        }
+
         const url = `https://api.github.com/repos/${MSG_REPO}/contents/${MSG_PATH}`;
-        const headers = { Authorization: 'Bearer ' + pat, Accept: 'application/vnd.github+json' };
+        const headers = ghHeaders(pat);
         const meta = await fetch(url, { headers }).then(r => r.json());
         let arr = [];
         if (meta.content) arr = JSON.parse(decodeBase64(meta.content));
@@ -607,13 +713,13 @@ async function submitMessage() {
         const msg = {
             id: 'm' + Date.now() + Math.floor(Math.random() * 1000),
             name: name || '匿名朋友',
-            text, image: image || '', video: video || '',
+            text, image, video,
             createdAt: new Date().toISOString()
         };
         arr.push(msg);
         const res = await fetch(url, {
             method: 'PUT',
-            headers: { ...headers, 'Content-Type': 'application/json' },
+            headers: ghHeaders(pat, { 'Content-Type': 'application/json' }),
             body: JSON.stringify({ message: '💬 新留言 from ' + (name || '匿名'), content: toBase64(JSON.stringify(arr, null, 2)), sha: meta.sha })
         });
         if (!res.ok) {
@@ -622,7 +728,9 @@ async function submitMessage() {
         }
         showToast('这颗星星已挂上星盘 ✦');
         document.getElementById('writeModal').classList.remove('show');
-        ['msgName', 'msgText', 'msgImage', 'msgVideo'].forEach(id => document.getElementById(id).value = '');
+        ['msgName', 'msgText'].forEach(id => document.getElementById(id).value = '');
+        ['msgImageFile', 'msgVideoFile'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+        ['imgPreview', 'vidPreview'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = ''; });
         // 立即用本地最新数据重绘，无需等待 Pages 重建即可看到自己刚发的星星
         messagesCache = arr;
         renderStars(messagesCache);
@@ -632,6 +740,25 @@ async function submitMessage() {
         showToast('发送失败：' + msg);
     }
     btn.disabled = false;
+}
+
+function initContactForm() {
+    const form = document.getElementById('contactForm');
+    if (!form) return;
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const to = (window.SITE_CONTENT && SITE_CONTENT.email) || '';
+        if (!to || to.indexOf('@') < 0) { showToast('站长还没填邮箱，暂时没法发邮件哦 ✦'); return; }
+        const name = form.querySelector('#cName').value.trim();
+        const fromEmail = form.querySelector('#cEmail').value.trim();
+        const msg = form.querySelector('#cMessage').value.trim();
+        if (!msg) { showToast('写点什么再发吧 ✦'); return; }
+        const subject = encodeURIComponent('来自 ' + (name || '访客') + ' 的留言');
+        const body = encodeURIComponent('访客：' + (name || '（未留名）') + '\n邮箱：' + (fromEmail || '（未留邮箱）') + '\n\n' + msg);
+        window.location.href = 'mailto:' + to + '?subject=' + subject + '&body=' + body;
+        showToast('已为你打开邮件 App，发送即可 ✦');
+        form.reset();
+    });
 }
 
 function initMessageWall() {
@@ -649,8 +776,11 @@ function initMessageWall() {
     document.getElementById('closeWrite').addEventListener('click', () => document.getElementById('writeModal').classList.remove('show'));
     document.getElementById('closeMsg').addEventListener('click', () => document.getElementById('msgModal').classList.remove('show'));
     document.getElementById('submitMsg').addEventListener('click', submitMessage);
+    bindUploadPreview('msgImageFile', 'imgPreview', 'image');
+    bindUploadPreview('msgVideoFile', 'vidPreview', 'video');
 
     loadMessages().then(renderStars);
 }
 
 if (document.getElementById('openStarboard')) initMessageWall();
+initContactForm();

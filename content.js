@@ -129,6 +129,7 @@ const SITE_CONTENT = {
   "contactText": "有任何想聊的、想合作的，或只是想交个朋友，都可以联系我～",
   "wechat": "elainefan10",
   "phone": "13391152067",
+  "email": "（在此填写你的邮箱）",
   "footerCopy": "© 2026 Elaine Fan. All rights reserved.",
   "footerQuote": "愿你的每一天都像海獭一样，被温暖包围着 ✦"
 };
@@ -200,8 +201,10 @@ const SITE_CONTENT = {
         if (cc.querySelector('.contact-text')) cc.querySelector('.contact-text').textContent = c.contactText;
         const cw = cc.querySelector('.chip-wechat'); if (cw) cw.textContent = c.wechat || '';
         const cp = cc.querySelector('.chip-phone'); if (cp) cp.textContent = c.phone || '';
+        const ce = cc.querySelector('.chip-email'); if (ce) ce.textContent = c.email || '';
         const wc = cc.querySelector('.wechat-chip'); if (wc) wc.href = c.wechat ? ('weixin://contacts/profile/' + c.wechat) : '#';
         const pc = cc.querySelector('.phone-chip'); if (pc) pc.href = c.phone ? ('tel:' + c.phone) : '#';
+        const ec = cc.querySelector('.email-chip'); if (ec) ec.href = c.email ? ('mailto:' + c.email) : '#';
     }
 
     if (q('.footer-logo span')) q('.footer-logo span').textContent = c.footerCopy;
