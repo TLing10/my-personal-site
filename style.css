@@ -566,9 +566,19 @@ body {
 .skill-bubble:nth-child(3) { background: linear-gradient(135deg, var(--white) 0%, var(--blue-soft) 100%); }
 .skill-bubble:nth-child(4) { background: linear-gradient(135deg, var(--white) 0%, var(--mint) 100%); }
 .skill-bubble:nth-child(5) { background: linear-gradient(135deg, var(--white) 0%, var(--lavender) 100%); }
+.skill-bubble:nth-child(6) { background: linear-gradient(135deg, var(--white) 0%, var(--pink-soft) 100%); }
 
 .skill-icon {
-    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 0.4rem;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.75);
+    box-shadow: 0 2px 8px rgba(139, 111, 92, 0.12);
+    font-size: 1.8rem;
 }
 
 .skill-name {

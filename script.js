@@ -323,7 +323,7 @@ setTimeout(() => {
 // ===== 打字机效果 =====
 const typewriterElement = document.getElementById('typewriter');
 const originalText = typewriterElement.textContent;
-const texts = ['Elaine Fan', '海獭爱好者', '星星收藏家'];
+const texts = (typeof SITE_CONTENT !== 'undefined' && SITE_CONTENT.typewriter) ? SITE_CONTENT.typewriter : ['Elaine Fan', '范意聆'];
 let textIndex = 0;
 let charIndex = 0;
 let isDeleting = false;
