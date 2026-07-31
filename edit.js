@@ -365,7 +365,7 @@ function setBusy(on, msg) {
     const l = $('#loadBtn'); if (l && on && msg && s && s.textContent === msg) l.textContent = '…';
 }
 
-window.addEventListener('DOMContentLoaded', () => {
+function initEditor() {
     $('#unlock').onclick = () => {
         if ($('#pass').value === PASSCODE) {
             $('#gate').style.display = 'none';
@@ -380,7 +380,13 @@ window.addEventListener('DOMContentLoaded', () => {
     $('#loadBtn').onclick = doLoad;
     $('#saveBtn').onclick = doSave;
     $('#resetBtn').onclick = () => { if (STATE && confirm('放弃未保存的修改，重新从线上载入？')) doLoad(); };
-});
+}
+/* 兼容 DOMContentLoaded 已触发（脚本晚于解析执行）的情况 */
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initEditor);
+} else {
+    initEditor();
+}
 
 async function doLoad() {
     TOKEN = $('#token').value.trim();
