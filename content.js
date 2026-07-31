@@ -10,7 +10,7 @@ const SITE_CONTENT = {
     "范意聆"
   ],
   "navName": "Elaine Fan",
-  "heroSubtitle": "✦ 北京大学在读本科 · 信息管理 ✦",
+  "heroSubtitle": "北京大学 · 信息管理 · 海獭与星星的收藏家 ✦",
   "heroTags": [
     "🎓 北大新生",
     "🥋 跆拳道黑带",
@@ -129,7 +129,7 @@ const SITE_CONTENT = {
   "contactText": "有任何想聊的、想合作的，或只是想交个朋友，都可以联系我～",
   "email": "elainefan10@icloud.com",
   "footerCopy": "© 2024 Elaine Fan. All rights reserved.",
-  "footerQuote": "愿你的每一天都像海獭一样，被星星温柔包围 ✦"
+  "footerQuote": "TEST_MARKER_123"
 };
 
 /* ===== 下面这段会自动把上面的文字填进页面，无需改动 ===== */
