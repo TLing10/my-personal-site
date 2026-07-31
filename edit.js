@@ -10,7 +10,10 @@
 const REPO = 'TLing10/my-personal-site';
 const BRANCH = 'main';
 const FILE_PATH = 'content.js';
-const RAW_URL = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/${FILE_PATH}`;
+/* 载入内容：优先从「自己网站的同源地址」读取（国内网络通常能访问 github.io，
+   但 raw.githubusercontent.com 常被拦截）；读不到再退回 raw 源。 */
+const RAW_URL = 'content.js';
+const RAW_FALLBACK = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/${FILE_PATH}`;
 const API_URL = `https://api.github.com/repos/${REPO}/contents/${FILE_PATH}`;
 
 /* 编辑密码：防止路人误改。想换密码就改下面这行。 */
@@ -211,15 +214,22 @@ function buildFile(obj) {
 
 /* ---------------- 读取线上内容 ---------------- */
 async function loadRaw() {
-    const r = await fetch(RAW_URL);
-    if (!r.ok) throw new Error('无法读取线上内容 (HTTP ' + r.status + ')');
-    const txt = await r.text();
-    const marker = 'const SITE_CONTENT = ';
-    const start = txt.indexOf(marker) + marker.length;
-    const end = txt.indexOf(';\n\n/* =====');
-    if (start < marker.length || end < 0) throw new Error('内容格式无法解析');
-    const literal = txt.slice(start, end);
-    return (new Function('return ' + literal))();
+    const sources = [RAW_URL, RAW_FALLBACK];
+    let lastErr = null;
+    for (const url of sources) {
+        try {
+            const r = await fetch(url);
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            const txt = await r.text();
+            const marker = 'const SITE_CONTENT = ';
+            const start = txt.indexOf(marker) + marker.length;
+            const end = txt.indexOf(';\n\n/* =====');
+            if (start < marker.length || end < 0) throw new Error('内容格式无法解析');
+            const literal = txt.slice(start, end);
+            return (new Function('return ' + literal))();
+        } catch (e) { lastErr = e; }
+    }
+    throw new Error('无法读取线上内容（请检查网络是否能访问 GitHub）：' + (lastErr ? lastErr.message : '未知错误'));
 }
 
 /* ---------------- 渲染表单 ---------------- */
@@ -397,7 +407,11 @@ async function doSave() {
         await commit();
         toast('已发布！约 1–2 分钟后生效，请硬刷新查看 ✦');
     } catch (err) {
-        toast('发布失败：' + err.message);
+        let msg = err.message || String(err);
+        if (/Failed to fetch|NetworkError|api\.github|timeout/i.test(msg)) {
+            msg += '（多为网络无法访问 api.github.com，请确认网络/代理后重试）';
+        }
+        toast('发布失败：' + msg);
     }
     setBusy(false);
 }
