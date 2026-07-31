@@ -401,6 +401,17 @@ function initEditor() {
 }
 
 /* ---------------- 留言管理 ---------------- */
+async function deleteUploaded(url, headers) {
+    if (!url || url.indexOf('tling10.github.io/my-personal-site/data/uploads/') < 0) return;
+    const rel = url.split('my-personal-site/')[1];
+    try {
+        const f = await fetch(`https://api.github.com/repos/${REPO}/contents/${rel}`, { headers }).then(r => r.json());
+        if (f.sha) await fetch(`https://api.github.com/repos/${REPO}/contents/${rel}`, {
+            method: 'DELETE', headers: { ...headers, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: '🗑 删除媒体文件', sha: f.sha })
+        });
+    } catch (e) { /* 媒体文件删除失败则忽略，留言记录已删除 */ }
+}
 const MSG_API = `https://api.github.com/repos/${REPO}/contents/data/messages.json`;
 
 async function loadMsgAdmin() {
@@ -425,6 +436,7 @@ async function loadMsgAdmin() {
         del.className = 'mini del'; del.textContent = '🗑 删除';
         del.onclick = async () => {
             if (!confirm('确定删除这条留言？')) return;
+            const m = arr[i];
             arr.splice(i, 1);
             try {
                 const meta = await fetch(MSG_API, { headers }).then(r => r.json());
@@ -433,6 +445,9 @@ async function loadMsgAdmin() {
                     headers: { ...headers, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: '🗑 删除留言', content: toBase64(JSON.stringify(arr, null, 2)), sha: meta.sha })
                 });
+                // 同时删除该留言上传的图片/视频文件，避免仓库里留下孤儿文件
+                await deleteUploaded(m.image, headers);
+                await deleteUploaded(m.video, headers);
                 toast('已删除 ✦');
                 loadMsgAdmin();
             } catch (e) { toast('删除失败：' + (e.message || e)); }
