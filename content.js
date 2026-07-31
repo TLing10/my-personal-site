@@ -129,7 +129,7 @@ const SITE_CONTENT = {
   "contactText": "有任何想聊的、想合作的，或只是想交个朋友，都可以联系我～",
   "wechat": "elainefan10",
   "phone": "13391152067",
-  "email": "（在此填写你的邮箱）",
+  "email": "elainefan10@icloud.com",
   "footerCopy": "© 2026 Elaine Fan. All rights reserved.",
   "footerQuote": "愿你的每一天都像海獭一样，被温暖包围着 ✦"
 };
