@@ -129,7 +129,7 @@ const SITE_CONTENT = {
   "contactText": "有任何想聊的、想合作的，或只是想交个朋友，都可以联系我～",
   "email": "elainefan10@icloud.com",
   "footerCopy": "© 2024 Elaine Fan. All rights reserved.",
-  "footerQuote": "TEST_MARKER_123"
+  "footerQuote": "愿你的每一天都像海獭一样，被星星温柔包围 ✦"
 };
 
 /* ===== 下面这段会自动把上面的文字填进页面，无需改动 ===== */
