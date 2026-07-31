@@ -14,7 +14,7 @@ const RAW_URL = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/${FILE_PATH
 const API_URL = `https://api.github.com/repos/${REPO}/contents/${FILE_PATH}`;
 
 /* 编辑密码：防止路人误改。想换密码就改下面这行。 */
-const PASSCODE = 'elaine2026';
+const PASSCODE = 'Fanyiling10';
 
 /* ---- 下方为 content.js 里必须保留的「自动填充」代码（不要改） ---- */
 const FILLER = `/* ===== 下面这段会自动把上面的文字填进页面，无需改动 ===== */
