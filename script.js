@@ -631,10 +631,7 @@ async function submitMessage() {
     btn.disabled = false;
 }
 
-async function initMessageWall() {
-    const msgs = await loadMessages();
-    renderStars(msgs);
-
+function initMessageWall() {
     const board = document.getElementById('starboard');
     document.getElementById('openStarboard').addEventListener('click', () => {
         board.classList.add('open');
@@ -649,6 +646,8 @@ async function initMessageWall() {
     document.getElementById('closeWrite').addEventListener('click', () => document.getElementById('writeModal').classList.remove('show'));
     document.getElementById('closeMsg').addEventListener('click', () => document.getElementById('msgModal').classList.remove('show'));
     document.getElementById('submitMsg').addEventListener('click', submitMessage);
+
+    loadMessages().then(renderStars);
 }
 
 if (document.getElementById('openStarboard')) initMessageWall();

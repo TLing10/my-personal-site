@@ -1339,7 +1339,7 @@ body {
 
 /* ===== 留言星盘 / 留言墙 ===== */
 .starboard {
-    position: fixed; inset: 0; z-index: 100; display: none; overflow: hidden;
+    position: fixed; inset: 0; z-index: 2000; display: none; overflow: hidden;
     background: linear-gradient(160deg, #1b1640, #2a1f5c 50%, #3a2a6b);
     color: #fff;
 }
