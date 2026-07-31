@@ -127,10 +127,10 @@ const SITE_CONTENT = {
   ],
   "contactTitle": "让我们一起创造美好 ✦",
   "contactText": "有任何想聊的、想合作的，或只是想交个朋友，都可以联系我～",
-  "wechat": "（在此填写你的微信号）",
-  "phone": "（在此填写你的电话）",
-  "footerCopy": "© 2024 Elaine Fan. All rights reserved.",
-  "footerQuote": "愿你的每一天都像海獭一样，被星星温柔包围 ✦"
+  "wechat": "elainefan10",
+  "phone": "13391152067",
+  "footerCopy": "© 2026 Elaine Fan. All rights reserved.",
+  "footerQuote": "愿你的每一天都像海獭一样，被温暖包围着 ✦"
 };
 
 /* ===== 下面这段会自动把上面的文字填进页面，无需改动 ===== */
