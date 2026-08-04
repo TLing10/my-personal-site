@@ -790,6 +790,7 @@ function initMessageWall() {
     bindUploadPreview('msgVideoFile', 'vidPreview', 'video');
 
     loadMessages().then(renderStars);
+    refreshMessagesFromApi();
 }
 
 (function init() {
