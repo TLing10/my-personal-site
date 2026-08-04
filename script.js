@@ -631,7 +631,7 @@ function compressImage(file, maxDim = 1280, quality = 0.82) {
 function ghHeaders(pat, extra) {
     const h = Object.assign({ Accept: 'application/vnd.github+json' }, extra || {});
     // Worker 模式下令牌由 Worker 代加，前端不携带 Authorization，避免令牌暴露/被扫描
-    if (!WORKER_URL && pat) h.Authorization = 'Bearer ' + pat;
+    if (pat) h.Authorization = 'Bearer ' + pat;
     return h;
 }
 async function putContents(path, b64, pat, message) {
