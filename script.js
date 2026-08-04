@@ -709,8 +709,7 @@ async function submitMessage() {
     const name = document.getElementById('msgName').value.trim();
     const text = document.getElementById('msgText').value.trim();
     const imgFile = document.getElementById('msgImageFile').files[0];
-    const vidFile = document.getElementById('msgVideoFile').files[0];
-    if (!text && !imgFile && !vidFile) { showToast('写点什么，或传张图/视频再发送吧 ✦'); return; }
+    if (!text && !imgFile) { showToast('写点什么，或传张图再发送吧 ✦'); return; }
     const pat = getMsgPat();
     if (!pat) { showToast('留言功能待配置，请联系站长 ✦'); return; }
 
@@ -725,14 +724,9 @@ async function submitMessage() {
             const b64 = await blobToBase64(compressed);
             image = await uploadMedia('data/uploads/m' + Date.now() + '.jpg', b64, pat, false);
         }
-        if (vidFile) {
-            if (vidFile.size > 50 * 1024 * 1024) { showToast('视频太大啦（>50MB 传不了），换个小点的 ✦'); btn.disabled = false; return; }
-            showToast('正在上传视频（可能需要一点时间）…');
-            const b64 = await blobToBase64(vidFile);
-            const ext = (vidFile.name.split('.').pop() || 'mp4').toLowerCase().replace(/[^a-z0-9]/g, '') || 'mp4';
-            video = await uploadMedia('data/uploads/m' + Date.now() + '.' + ext, b64, pat, true);
-        }
-
+        ['msgVideoFile'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+        ['vidPreview'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = ''; });
+        
         const url = ghApi('contents/' + MSG_PATH);
         const headers = ghHeaders(pat);
         const meta = await fetch(url, { headers }).then(r => r.json());
