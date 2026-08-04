@@ -776,4 +776,23 @@ function initMessageWall() {
     loadMessages().then(renderStars);
 }
 
-if (document.getElementById('openStarboard')) initMessageWall();
+(function init() {
+    function start() {
+        try {
+            if (document.getElementById('openStarboard')) {
+                initMessageWall();
+                console.log('[留言墙] 初始化成功 ✓');
+            } else {
+                console.log('[留言墙] 未找到 openStarboard 元素，跳过');
+            }
+        } catch(e) {
+            console.error('[留言墙] 初始化失败:', e.message, e.stack);
+        }
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', start);
+    } else {
+        start();
+    }
+})();
+
