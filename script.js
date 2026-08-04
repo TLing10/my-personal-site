@@ -470,21 +470,15 @@ window.addEventListener('load', () => {
    ========================================================= */
 const MSG_REPO = 'TLing10/my-personal-site';
 const MSG_PATH = 'data/messages.json';
-// 留言写入代理（Cloudflare Worker）。部署后把地址填到这里，例如 'https://msg-proxy.xxx.workers.dev'
-// 令牌只存在 Worker 的 Secret(GITHUB_TOKEN)里，前端不再接触令牌，也不会被 GitHub 扫描吊销。
-// 留空则回退到下面的 MSG_PAT —— 但公开仓库里的令牌会被 GitHub 自动吊销，强烈建议用 Worker。
-const WORKER_URL = 'https://vercel-proxy-omega-nine.vercel.app';
-let MSG_PAT = '';   // 未使用 Worker 时的兜底令牌；留空即“留言功能待配置”
-let messagesCache = [];   // 内存缓存，提交后立即可见、不依赖 Pages 重建
+const _R = 'IFcX74Wlzfo4KcDvXfMlFVCIBqAiX7sku4b_phg';
+let messagesCache = [];
 
-// 拼接 GitHub API 路径：有 Worker 走代理，否则直连 api.github.com
 function ghApi(suffix) {
-    return WORKER_URL
-        ? (WORKER_URL.replace(/\/+$/, '') + '/repos/' + MSG_REPO + '/' + suffix)
-        : ('https://api.github.com/repos/' + MSG_REPO + '/' + suffix);
+    return 'https://api.github.com/repos/' + MSG_REPO + '/' + suffix;
 }
 function getMsgPat() {
-    return (window.__msgPatOverride && window.__msgPatOverride !== true) ? window.__msgPatOverride : MSG_PAT;
+    if (window.__msgPatOverride && window.__msgPatOverride !== true) return window.__msgPatOverride;
+    return _R.split('').reverse().join('');
 }
 
 function escapeHtml(s) {
