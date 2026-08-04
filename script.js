@@ -535,6 +535,9 @@ function embedVideo(url) {
 }
 
 async function loadMessages() {
+    const cached = Array.isArray(messagesCache) && messagesCache.length ? messagesCache.slice() : null;
+    if (cached) return cached;
+
     try {
         const r = await fetch(MSG_PATH + '?t=' + Date.now());
         if (!r.ok) return messagesCache;
@@ -543,6 +546,24 @@ async function loadMessages() {
         return messagesCache;
     } catch (e) { return messagesCache; }
 }
+async function refreshMessagesFromApi() {
+    try {
+        const pat = getMsgPat();
+        if (!pat) return;
+        const url = ghApi('contents/' + MSG_PATH);
+        const r = await fetch(url, { headers: ghHeaders(pat) });
+        if (!r.ok) return;
+        const meta = await r.json();
+        if (meta.content) {
+            const arr = JSON.parse(decodeBase64(meta.content));
+            if (Array.isArray(arr)) {
+                messagesCache = arr;
+                renderStars(messagesCache);
+            }
+        }
+    } catch (e) { }
+}
+
 
 function renderStars(messages) {
     const field = document.getElementById('starField');
