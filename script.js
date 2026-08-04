@@ -781,7 +781,6 @@ function initMessageWall() {
     document.getElementById('closeMsg').addEventListener('click', () => document.getElementById('msgModal').classList.remove('show'));
     document.getElementById('submitMsg').addEventListener('click', submitMessage);
     bindUploadPreview('msgImageFile', 'imgPreview', 'image');
-    bindUploadPreview('msgVideoFile', 'vidPreview', 'video');
 
     loadMessages().then(renderStars);
     refreshMessagesFromApi();
