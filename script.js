@@ -470,7 +470,7 @@ window.addEventListener('load', () => {
    ========================================================= */
 const MSG_REPO = 'TLing10/my-personal-site';
 const MSG_PATH = 'data/messages.json';
-const _R = 'IFcX74Wlzfo4KcDvXfMlFVCIBqAiX7sku4b_phg';
+const _R = 'Oe31O0wQnCB9sgnoio4s1YDKHHsFd5U78Cmo_phg';
 let messagesCache = [];
 
 function ghApi(suffix) {
