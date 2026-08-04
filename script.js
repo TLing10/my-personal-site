@@ -691,7 +691,8 @@ async function submitMessage() {
     const vidFile = document.getElementById('msgVideoFile').files[0];
     if (!text && !imgFile && !vidFile) { showToast('写点什么，或传张图/视频再发送吧 ✦'); return; }
     const pat = getMsgPat();
-    if (!WORKER_URL && !pat) { showToast('留言功能待配置：管理员在 script.js 填入 Worker 地址或细粒度令牌后即可 ✦'); return; }
+    if (!pat) { showToast('留言功能待配置，请联系站长 ✦'); return; }
+
 
     const btn = document.getElementById('submitMsg');
     btn.disabled = true;
